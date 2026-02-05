@@ -24,5 +24,15 @@
     in
     {
       packages.x86_64-linux.default = flup;
+      devShells.default = pkgs.mkShellNoCC {
+        packages = with pkgs; [ nil nixfmt-rfc-style ];
+        shellHook = ''
+          if [[ -v h ]]; then
+            export PATH=$h/bin:$PATH;
+          else
+            echo 'Project root env var h is not set.' >&2
+          fi
+        '';
+      };
     };
 }
