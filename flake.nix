@@ -8,31 +8,42 @@
   };
 
   outputs =
-    { self, nixpkgs, ... }:
-    let
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      flup = pkgs.writeScriptBin "flup" ''
-        #!${pkgs.zsh}/bin/zsh
-        set -eu -o pipefail
-        overrides=(
-          --override-input nixpkgs github:NixOS/nixpkgs/${self.inputs.nixpkgs.rev}
-          --override-input unstable github:NixOS/nixpkgs/${self.inputs.unstable.rev}
-          --override-input flake-utils github:numtide/flake-utils/${self.inputs.flake-utils.rev}
-        )
-        flake update $overrides $@
-      '';
-    in
     {
-      packages.x86_64-linux.default = flup;
-      devShells.default = pkgs.mkShellNoCC {
-        packages = with pkgs; [ nil nixfmt-rfc-style ];
-        shellHook = ''
-          if [[ -v h ]]; then
-            export PATH=$h/bin:$PATH;
-          else
-            echo 'Project root env var h is not set.' >&2
-          fi
+      self,
+      nixpkgs,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        flup = pkgs.writeScriptBin "flup" ''
+          #!${pkgs.zsh}/bin/zsh
+          set -eu -o pipefail
+          overrides=(
+            --override-input nixpkgs github:NixOS/nixpkgs/${self.inputs.nixpkgs.rev}
+            --override-input unstable github:NixOS/nixpkgs/${self.inputs.unstable.rev}
+            --override-input flake-utils github:numtide/flake-utils/${self.inputs.flake-utils.rev}
+          )
+          flake update $overrides $@
         '';
-      };
-    };
+      in
+      {
+        packages.default = flup;
+        devShells.default = pkgs.mkShellNoCC {
+          packages = with pkgs; [
+            nil
+            nixfmt-rfc-style
+          ];
+          shellHook = ''
+            if [[ -v h ]]; then
+              export PATH=$h/bin:$PATH;
+            else
+              echo 'Project root env var h is not set.' >&2
+            fi
+          '';
+        };
+      }
+    );
 }
