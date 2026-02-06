@@ -47,6 +47,9 @@
             --override-input nixpkgs github:NixOS/nixpkgs/${self.inputs.nixpkgs.rev}
             --override-input unstable github:NixOS/nixpkgs/${self.inputs.unstable.rev}
             --override-input flake-utils github:numtide/flake-utils/${self.inputs.flake-utils.rev}
+            --override-input pyproject-nix github:pyproject-nix/pyproject.nix/${self.inputs.pyproject-nix.rev}
+            --override-input uv2nix github:pyproject-nix/uv2nix/${self.inputs.uv2nix.rev}
+            --override-input pyproject-build-systems github:pyproject-nix/build-system-pkgs/${self.inputs.pyproject-build-systems.rev}
           )
           flake update $overrides $@
         '';
