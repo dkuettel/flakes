@@ -52,6 +52,7 @@
             --override-input pyproject-build-systems github:pyproject-nix/build-system-pkgs/${self.inputs.pyproject-build-systems.rev}
           )
           flake update $overrides $@
+          echo 'Note that input overrides are purely based on input names, not their defined values.'
         '';
       in
       {
