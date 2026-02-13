@@ -51,7 +51,7 @@
             --override-input uv2nix github:pyproject-nix/uv2nix/${self.inputs.uv2nix.rev}
             --override-input pyproject-build-systems github:pyproject-nix/build-system-pkgs/${self.inputs.pyproject-build-systems.rev}
           )
-          flake update $overrides $@
+          flake update $overrides --quiet --quiet $@
         '';
         flup = pkgs.writeScriptBin "flup" ''
           #!${pkgs.zsh}/bin/zsh
