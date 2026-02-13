@@ -51,7 +51,9 @@
             --override-input uv2nix github:pyproject-nix/uv2nix/${self.inputs.uv2nix.rev}
             --override-input pyproject-build-systems github:pyproject-nix/build-system-pkgs/${self.inputs.pyproject-build-systems.rev}
           )
-          flake update $overrides --quiet --quiet $@
+          # double quiet is nice, but it doesnt show anymore what inputs it actually did update
+          # flake update $overrides --quiet --quiet $@
+          flake update $overrides $@
         '';
         flup = pkgs.writeScriptBin "flup" ''
           #!${pkgs.zsh}/bin/zsh
