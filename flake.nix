@@ -40,7 +40,7 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        flup = pkgs.writeScriptBin "flup" ''
+        flupq = pkgs.writeScriptBin "flupq" ''
           #!${pkgs.zsh}/bin/zsh
           set -eu -o pipefail
           overrides=(
@@ -52,11 +52,20 @@
             --override-input pyproject-build-systems github:pyproject-nix/build-system-pkgs/${self.inputs.pyproject-build-systems.rev}
           )
           flake update $overrides $@
+        '';
+        flup = pkgs.writeScriptBin "flup" ''
+          #!${pkgs.zsh}/bin/zsh
+          set -eu -o pipefail
+          ${flupq}/bin/flupq $@
           echo 'Note that input overrides are purely based on input names, not their defined values.'
         '';
+        env = pkgs.buildEnv {
+          name = "flup";
+          paths = [flup flupq];
+        };
       in
       {
-        packages.default = flup;
+        packages.default = env;
         devShells.default = pkgs.mkShellNoCC {
           packages = with pkgs; [
             nil
